@@ -7,7 +7,7 @@
          >
 
      <com.elsdoerfer.android.autostarts.compat.FixedExpandableListView
-               android:id="@id/android:list"
+               android:id="@android:id/list"
                android:layout_width="fill_parent"
                android:layout_height="fill_parent"
                android:layout_weight="1"
@@ -22,7 +22,7 @@
                android:visibility="gone"/>
 
      <ProgressBar
-            android:id="@id/android:empty"
+            android:id="@android:id/empty"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
  </LinearLayout>

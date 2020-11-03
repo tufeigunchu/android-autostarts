@@ -1,14 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 30
     buildToolsVersion "30.0.2"
     defaultConfig {
         applicationId 'io.github.muntashirakon.autostarts'
         minSdkVersion 21
-        targetSdkVersion 29
-        versionCode 33
-        versionName "2.0.0"
+        targetSdkVersion 30
+        versionCode 34
+        versionName "2.0.1"
     }
     buildTypes {
         release {
@@ -16,8 +16,15 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    compileOptions {
+        sourceCompatibility = 1.8
+        targetCompatibility = 1.8
+    }
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'androidx.annotation:annotation:1.1.0'
+    def libsuVersion = '3.0.2'
+    implementation "com.github.topjohnwu.libsu:core:${libsuVersion}"
 }

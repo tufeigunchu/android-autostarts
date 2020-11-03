@@ -65,10 +65,10 @@ public class ReceiverReader {
 		"http://schemas.android.com/apk/res/android";
 
 	public interface OnLoadProgressListener {
-		public void onProgress(ArrayList<IntentFilterInfo> currentState, float progress);
+		void onProgress(ArrayList<IntentFilterInfo> currentState, float progress);
 	}
 
-	private static enum ParserState { Unknown, InManifest,
+	private enum ParserState { Unknown, InManifest,
 		InApplication, InReceiver, InIntentFilter, InAction }
 
 	private final Context mContext;
@@ -233,6 +233,7 @@ public class ReceiverReader {
 					.invoke(scannedAppContext);
 
 			// getCookieName is @hide method, it returns name of apk file for given asset cookie
+			//noinspection JavaReflectionMemberAccess
 			Method getCookieName = AssetManager.class.getMethod("getCookieName", int.class);
 
 			// "android" package has no resource path, use hardcoded path,
