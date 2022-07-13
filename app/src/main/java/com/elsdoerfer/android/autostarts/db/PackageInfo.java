@@ -25,6 +25,14 @@ public class PackageInfo implements Parcelable {
 		return this.packageName.hashCode();
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof PackageInfo)) return false;
+		PackageInfo that = (PackageInfo) o;
+		return packageName.equals(that.packageName);
+	}
+
 	/**
 	 * Return a label identifying the package.
 	 */
