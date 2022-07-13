@@ -134,7 +134,7 @@ public class ListActivity extends ExpandableListActivity {
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         requestWindowFeature(Window.FEATURE_PROGRESS);
         setProgressBarIndeterminateVisibility(false);
-        setContentView(R.layout.list);
+        setContentView(R.layout.activity_list);
         setDefaultTitle();
 
         // Set everything up.
@@ -269,7 +269,7 @@ public class ListActivity extends ExpandableListActivity {
         }
         // Inflate the menu items for use in the action bar
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.actionbar, menu);
+        inflater.inflate(R.menu.activity_help_actions, menu);
         mActionBarMenu = menu;
 
         mExpandCollapseToggleItem = menu.findItem(R.id.expand);
