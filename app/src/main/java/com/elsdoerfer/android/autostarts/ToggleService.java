@@ -139,32 +139,29 @@ public class ToggleService extends Service {
                     ToggleTool.toggleState(ToggleService.this, component, desiredState);
 
             mItemBeingProcessed = null;
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    if (!success) {
-                        // Now that we do state toggling in the background in the
-                        // service, error handling poses new challenges. For now,
-                        // just show a toast. However, I never liked toasts, of course.
-                        // Options include notifications, as well as additional clever
-                        // integration with an activity that might be in the foreground.
-                        Resources res = getResources();
-                        Toast toast = Toast.makeText(
-                                ToggleService.this,
-                                String.format(res.getString(R.string.state_change_failed),
-                                        // TODO: Instead of the component name, it would be
-                                        // better to refer to the event the user wanted to
-                                        // to remove the component from. Unfortunately, we do
-                                        // not even carry this information along.
-                                        component.getLabel(), component.componentName),
-                                Toast.LENGTH_SHORT);
-                        toast.show();
-                    }
-
-                    Log.d(Utils.TAG, "Processing " + component + " done");
-                    onQueueModified(component, false);
-                    processNextItem();
+            mHandler.post(() -> {
+                if (!success) {
+                    // Now that we do state toggling in the background in the
+                    // service, error handling poses new challenges. For now,
+                    // just show a toast. However, I never liked toasts, of course.
+                    // Options include notifications, as well as additional clever
+                    // integration with an activity that might be in the foreground.
+                    Resources res = getResources();
+                    Toast toast = Toast.makeText(
+                            ToggleService.this,
+                            String.format(res.getString(R.string.state_change_failed),
+                                    // TODO: Instead of the component name, it would be
+                                    // better to refer to the event the user wanted to
+                                    // to remove the component from. Unfortunately, we do
+                                    // not even carry this information along.
+                                    component.getLabel(), component.componentName),
+                            Toast.LENGTH_SHORT);
+                    toast.show();
                 }
+
+                Log.d(Utils.TAG, "Processing " + component + " done");
+                onQueueModified(component, false);
+                processNextItem();
             });
         }).start();
     }

@@ -4,6 +4,8 @@ import android.content.pm.PackageManager;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
+
 
 /**
  * This can be compared to android.content.pm.ComponentInfo,
@@ -26,6 +28,7 @@ public class ComponentInfo implements Parcelable {
 	public ComponentInfo() {
 	}
 
+	@NonNull
 	@Override
 	public String toString() {
 		return String.format("%s/%s", packageInfo.packageName, componentName);
@@ -38,9 +41,9 @@ public class ComponentInfo implements Parcelable {
 
 	@Override
 	public boolean equals(Object o) {
-		if (o == null)
-			return false;
-		return this.componentName.equals(((ComponentInfo)o).componentName);
+		if (o instanceof ComponentInfo)
+			return this.componentName.equals(((ComponentInfo)o).componentName);
+		else return false;
 	}
 
 	/**
@@ -65,8 +68,7 @@ public class ComponentInfo implements Parcelable {
 		case PackageManager.COMPONENT_ENABLED_STATE_DEFAULT:
 			return defaultEnabled;
 		default:
-			throw new RuntimeException(
-					"Not a valid enabled state: "+currentEnabledState);
+			throw new RuntimeException("Not a valid enabled state: " + currentEnabledState);
 		}
 	}
 

@@ -2,25 +2,31 @@ package com.elsdoerfer.android.autostarts;
 
 import java.util.ArrayList;
 
+import android.annotation.SuppressLint;
 import android.app.DialogFragment;
 import android.app.ExpandableListActivity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.*;
+import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
 import android.text.method.MovementMethod;
 import android.text.style.ClickableSpan;
+import android.text.style.StyleSpan;
 import android.view.*;
 import android.view.View.OnClickListener;
 import android.widget.ExpandableListView;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.view.menu.MenuBuilder;
 
 import com.elsdoerfer.android.autostarts.db.ComponentInfo;
 import com.elsdoerfer.android.autostarts.db.IntentFilterInfo;
@@ -39,7 +45,6 @@ public class ListActivity extends ExpandableListActivity {
     private MenuItem mExpandCollapseToggleItem;
     private MenuItem mGroupingModeItem;
     MenuItem mReloadItem;
-    private Toast mInfoToast;
 
     MyExpandableListAdapter mListAdapter;
     ArrayList<IntentFilterInfo> mEvents;
@@ -50,7 +55,7 @@ public class ListActivity extends ExpandableListActivity {
 
     protected ToggleService mToggleService;
 
-    private ServiceConnection mToggleServiceConnection = new ServiceConnection() {
+    private final ServiceConnection mToggleServiceConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName className, IBinder service) {
             mToggleService = ((ToggleService.LocalBinder) service).getService();
             mToggleService.setHandler(new ToggleService.ToggleServiceListener() {
@@ -244,13 +249,6 @@ public class ListActivity extends ExpandableListActivity {
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-        if (mInfoToast != null)
-            mInfoToast.cancel();
-    }
-
-    @Override
     protected void onDestroy() {
         if (mDb != null)
             mDb.close();
@@ -264,7 +262,11 @@ public class ListActivity extends ExpandableListActivity {
         super.onDestroy();
     }
 
+    @SuppressLint("RestrictedApi")
     public boolean onCreateOptionsMenu(Menu menu) {
+        if (menu instanceof MenuBuilder) {
+            ((MenuBuilder) menu).setOptionalIconsVisible(true);
+        }
         // Inflate the menu items for use in the action bar
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.actionbar, menu);
@@ -299,10 +301,10 @@ public class ListActivity extends ExpandableListActivity {
         // Proper title for the grouping mode toggle item.
         if (mListAdapter.getGrouping() == MyExpandableListAdapter.GROUP_BY_ACTION) {
             mGroupingModeItem.setTitle(R.string.group_by_package);
-            mGroupingModeItem.setIcon(R.drawable.ic_action_action_view_list);
+            mGroupingModeItem.setIcon(R.drawable.ic_view_list);
         } else {
             mGroupingModeItem.setTitle(R.string.group_by_action);
-            mGroupingModeItem.setIcon(R.drawable.ic_action_action_view_column);
+            mGroupingModeItem.setIcon(R.drawable.ic_view_column);
         }
 
         // Decide whether we want to offer the option to collapse, or
@@ -316,11 +318,11 @@ public class ListActivity extends ExpandableListActivity {
         }
         if (expandCount / (float) numGroups >= 0.5) {
             mExpandCollapseToggleItem.setTitle(R.string.collapse_all);
-            mExpandCollapseToggleItem.setIcon(R.drawable.ic_action_navigation_expand_less);
+            mExpandCollapseToggleItem.setIcon(R.drawable.ic_expand_less);
             mExpandSuggested = false;
         } else {
             mExpandCollapseToggleItem.setTitle(R.string.expand_all);
-            mExpandCollapseToggleItem.setIcon(R.drawable.ic_action_navigation_expand_more);
+            mExpandCollapseToggleItem.setIcon(R.drawable.ic_expand_more);
             mExpandSuggested = true;
         }
 
@@ -472,10 +474,8 @@ public class ListActivity extends ExpandableListActivity {
     protected void showEventDetails(IntentFilterInfo event) {
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         Fragment prev = getFragmentManager().findFragmentByTag("details");
-        if (prev != null)
-            ft.remove(prev);
+        if (prev != null) ft.remove(prev);
         ft.addToBackStack(null);
-
         DialogFragment newFragment = EventDetailsFragment.newInstance(event);
         newFragment.show(ft, "details");
     }
@@ -494,30 +494,17 @@ public class ListActivity extends ExpandableListActivity {
     // Consider: https://github.com/johnkil/Android-AppMsg
     public void showInfoToast(String action) {
         Object[] data = Actions.MAP.get(action);
-        if (mInfoToast == null) {
-            LayoutInflater inflater = getLayoutInflater();
-            View layout = inflater.inflate(R.layout.detail_toast, findViewById(R.id.root));
-            mInfoToast = new Toast(this);
-            mInfoToast.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM, 0, 0);
-            mInfoToast.setDuration(Toast.LENGTH_LONG);
-            mInfoToast.setView(layout);
-        }
-        ((TextView) mInfoToast.getView().findViewById(R.id.title)).setText(getIntentName(action));
-        TextView message = mInfoToast.getView().findViewById(android.R.id.message);
-        CharSequence info = "";
-        if (data == null) {
-            message.setVisibility(View.GONE);
-        } else {
-            if (data[2] != null)  // Hide info text both for null and empty string values.
-                info = getResources().getText((Integer) data[2]);
-            if (!info.equals("")) {
-                message.setText(info);
-                message.setVisibility(View.VISIBLE);
-            } else {
-                message.setVisibility(View.GONE);
+        SpannableString actionBold = new SpannableString(getIntentName(action));
+        actionBold.setSpan(new StyleSpan(Typeface.BOLD), 0, actionBold.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        SpannableStringBuilder builder = new SpannableStringBuilder(actionBold);
+        if (data != null) {
+            CharSequence info = getText((Integer) data[2]);
+            if (info.length() > 0) {
+                builder.append("\n");
+                builder.append(info);
             }
         }
-        mInfoToast.show();
+        Toast.makeText(this, builder, Toast.LENGTH_LONG).show();
     }
 
     /**

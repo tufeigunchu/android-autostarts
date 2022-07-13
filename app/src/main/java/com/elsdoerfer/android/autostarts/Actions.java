@@ -311,7 +311,7 @@ final class Actions {
 		// Convert the list of available actions (and their data) into
 		// a ordered hash map which we are than able to easily query by
 		// action name.
-		MAP = new LinkedHashMap<String, Object[]>();
+		MAP = new LinkedHashMap<>();
 		for (Object[] action : Actions.ALL)
 			MAP.put((String)action[0], action);
 	}
@@ -330,6 +330,6 @@ final class Actions {
 		else if (idx2 == -1)
 			return -1;
 		else
-			return ((Integer)idx1).compareTo(idx2);
+			return Integer.compare(idx1, idx2);
 	}
 }

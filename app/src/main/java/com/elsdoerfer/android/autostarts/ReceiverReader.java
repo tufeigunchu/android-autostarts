@@ -100,7 +100,7 @@ public class ReceiverReader {
 	 * Main method to make this class go ahead and do it's job.
 	 */
 	public ArrayList<IntentFilterInfo> load() {
-		mResult = new ArrayList<IntentFilterInfo>();
+		mResult = new ArrayList<>();
 
 		List<android.content.pm.PackageInfo> packages =
 			mPackageManager.getInstalledPackages(PackageManager.GET_DISABLED_COMPONENTS);
@@ -144,9 +144,7 @@ public class ReceiverReader {
 			AssetManager assets = scannedAppContext.getAssets();
 			xml = openManifest(scannedAppContext, assets);
 			resources = new Resources(assets, mContext.getResources().getDisplayMetrics(), null);
-		} catch (IOException e) {
-			Log.e(TAG, "Unable to open manifest or resources for "+p.packageName, e);
-		} catch (NameNotFoundException e) {
+		} catch (IOException | NameNotFoundException e) {
 			Log.e(TAG, "Unable to open manifest or resources for "+p.packageName, e);
 		} catch (NullPointerException e) {
 			// I've been seeing a lot of NullPointerException's in
@@ -182,40 +180,50 @@ public class ReceiverReader {
 				switch (eventType) {
 				case XmlPullParser.START_TAG:
 					tagName = xml.getName();
-					if (tagName.equals("manifest"))
-						startManifest();
-					else if (tagName.equals("application"))
-						startApplication();
-					else if (tagName.equals("receiver"))
-						startReceiver();
-					else if (tagName.equals("intent-filter"))
-						startIntentFilter();
-					else if (tagName.equals("action"))
-						startAction();
+					switch (tagName) {
+						case "manifest":
+							startManifest();
+							break;
+						case "application":
+							startApplication();
+							break;
+						case "receiver":
+							startReceiver();
+							break;
+						case "intent-filter":
+							startIntentFilter();
+							break;
+						case "action":
+							startAction();
+							break;
+					}
 					break;
-
 				case XmlPullParser.END_TAG:
 					tagName = xml.getName();
-					if (tagName.equals("manifest"))
-						endManifest();
-					else if (tagName.equals("application"))
-						endApplication();
-					else if (tagName.equals("receiver"))
-						endReceiver();
-					else if (tagName.equals("intent-filter"))
-						endIntentFilter();
-					else if (tagName.equals("action"))
-						endAction();
+					switch (tagName) {
+						case "manifest":
+							endManifest();
+							break;
+						case "application":
+							endApplication();
+							break;
+						case "receiver":
+							endReceiver();
+							break;
+						case "intent-filter":
+							endIntentFilter();
+							break;
+						case "action":
+							endAction();
+							break;
+					}
 					break;
 				}
 				eventType = xml.nextToken();
 			}
-		} catch (XmlPullParserException e) {
+		} catch (XmlPullParserException | IOException e) {
 			Log.e(TAG, "Unable to process manifest for "+p.packageName, e);
-		} catch (IOException e) {
-			Log.e(TAG, "Unable to process manifest for "+p.packageName, e);
-		}
-		finally {
+		} finally {
 			mCurrentXML = null;
 			mCurrentResources = null;
 		}

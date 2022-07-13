@@ -47,12 +47,8 @@ class LoadTask extends AsyncTask<Object, Object, ArrayList<IntentFilterInfo>> {
 
 	@Override
 	protected ArrayList<IntentFilterInfo> doInBackground(Object... params) {
-		ReceiverReader reader = new ReceiverReader(mListActivity, new OnLoadProgressListener() {
-			@Override
-			public void onProgress(ArrayList<IntentFilterInfo> currentState, float progress) {
-				publishProgress(currentState, progress);
-			}
-		});
+		ReceiverReader reader = new ReceiverReader(mListActivity, (currentState, progress) ->
+				publishProgress(currentState, progress));
 		return reader.load();
 	}
 

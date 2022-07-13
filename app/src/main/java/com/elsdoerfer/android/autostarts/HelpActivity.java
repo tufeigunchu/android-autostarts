@@ -1,76 +1,82 @@
 package com.elsdoerfer.android.autostarts;
 
-import android.app.Activity;
+import android.graphics.Typeface;
 import android.os.Bundle;
-import android.text.Html;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
 import android.text.Spanned;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.webkit.WebView;
-import android.widget.Button;
+import android.text.style.StyleSpan;
+import android.view.MenuItem;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.elsdoerfer.android.autostarts.opt.RootFeatures;
 
-public class HelpActivity extends Activity {
+import java.util.Objects;
 
-	private static int[] DefaultFaq = {
-		R.array.faq1,
-		R.array.faq2,
-		R.array.faq3,
-		R.array.faq4,
-		R.array.faq5,
-		R.array.faq6,
-	};
+public class HelpActivity extends AppCompatActivity {
+    private static final int[] DefaultFaq = {
+            R.array.faq1,
+            R.array.faq2,
+            R.array.faq3,
+            R.array.faq4,
+            R.array.faq5,
+            R.array.faq6,
+    };
 
-	// Does not include questions about root features
-	private static int[] NoRootFaq = {
-		R.array.faq1,
-		R.array.faq3,
-		R.array.faq4
-	};
+    // Does not include questions about root features
+    private static final int[] NoRootFaq = {
+            R.array.faq1,
+            R.array.faq3,
+            R.array.faq4
+    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.help);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
 
         // Build the FAQ text.
-	    int[] faqConfig = RootFeatures.Enabled ? DefaultFaq : NoRootFaq;
+        int[] faqConfig = RootFeatures.Enabled ? DefaultFaq : NoRootFaq;
 
-        StringBuilder fullText = new StringBuilder("<html><body>");
+        SpannableStringBuilder builder = new SpannableStringBuilder();
         boolean isQuestion = false;
-        for (int i=0; i<faqConfig.length; i++) {
-	        // TODO: The string-array items use HTML formatting, which
-	        // is lost here. There doesn't seem to be a way to read the
-	        // string-array resource as a Spannable?
-	        CharSequence[] question = getResources().getTextArray(faqConfig[i]);
+        for (int k : faqConfig) {
+            // TODO: The string-array items use HTML formatting, which
+            // is lost here. There doesn't seem to be a way to read the
+            // string-array resource as a Spannable?
+            CharSequence[] question = getResources().getTextArray(k);
 
-	        for (int j=0; j<=1; j++) {
-	            // The array contains alternating questions and answers
-	            isQuestion = !isQuestion;
+            for (int j = 0; j <= 1; j++) {
+                // The array contains alternating questions and answers
+                isQuestion = !isQuestion;
 
-	            String entry;
-	            if (question[j] instanceof Spanned)
-	                entry = Html.toHtml((Spanned)question[j]);
-	            else {
-		            if (isQuestion)
-		                entry = "<p><b>" + question[j].toString() + "</b></p>";
-		            else {
-		                entry = "<p>" + question[j].toString() + "</p>";
-		            }
-	            }
-	            fullText.append(entry);
-	        }
+                if (question[j] instanceof Spanned) {
+                    builder.append(question[j]).append("\n\n");
+                } else {
+                    if (isQuestion) {
+                        SpannableString q = new SpannableString(question[j]);
+                        q.setSpan(new StyleSpan(Typeface.BOLD), 0, q.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        builder.append(q).append("\n");
+                    } else {
+                        builder.append(question[j]).append("\n\n");
+                    }
+                }
+            }
         }
-        fullText.append("</body></html>");
 
-        ((WebView)findViewById(R.id.faq_text)).loadData(
-        		fullText.toString(), "text/html", "utf-8");
+        ((TextView) findViewById(R.id.faq_text)).setText(builder);
+    }
 
-        ((Button)findViewById(R.id.close)).setOnClickListener(new OnClickListener() {
-			public void onClick(View v) {
-				finish();
-			}
-        });
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

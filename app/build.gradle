@@ -23,6 +23,7 @@ android {
 }
 
 dependencies {
+    implementation 'androidx.appcompat:appcompat:1.4.2'
     implementation 'androidx.annotation:annotation:1.4.0'
     def libsuVersion = '5.0.1'
     implementation "com.github.topjohnwu.libsu:core:${libsuVersion}"

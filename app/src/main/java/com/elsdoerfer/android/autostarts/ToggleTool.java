@@ -88,11 +88,11 @@ class ToggleTool {
 
         // As described above, in the rare case we are allowed to use
         // setComponentEnabledSetting(), we should do so.
+        ComponentName c = new ComponentName(component.packageInfo.packageName, component.componentName);
         if (context.checkCallingOrSelfPermission(permission.CHANGE_COMPONENT_ENABLED_STATE)
                 == PackageManager.PERMISSION_GRANTED) {
             Log.i(Utils.TAG, "Calling setComponentEnabledState() directly");
             PackageManager pm = context.getPackageManager();
-            ComponentName c = new ComponentName(component.packageInfo.packageName, component.componentName);
             pm.setComponentEnabledSetting(
                     c, doEnable ? PackageManager.COMPONENT_ENABLED_STATE_ENABLED
                             : PackageManager.COMPONENT_ENABLED_STATE_DISABLED, 0);
@@ -103,8 +103,7 @@ class ToggleTool {
             // Run the command; we have different invocations we can try, but
             // we'll stop at the first one we succeed with.
             boolean success = false;
-            if (Utils.runRootCommand(String.format("pm %s '%s/%s'", (doEnable ? "enable" : "disable"),
-                    component.packageInfo.packageName, component.componentName)
+            if (Utils.runRootCommand(String.format("pm %s %s", (doEnable ? "enable" : "disable"), c.flattenToString())
             )) {
                 success = true;
             }
@@ -115,8 +114,6 @@ class ToggleTool {
             // TODO: It would be more stable if we would reload
             // getComponentEnabledSetting() regardless of the return code.
             final PackageManager pm = context.getPackageManager();
-            ComponentName c = new ComponentName(
-                    component.packageInfo.packageName, component.componentName);
             component.currentEnabledState = pm.getComponentEnabledSetting(c);
 
             success = component.isCurrentlyEnabled() == doEnable;
