@@ -1,0 +1,4 @@
+- Replace RootUtils with Libsu
+- Partially migrated to AndroidX
+- Remove WebView with TextView in help page
+- Display “Open in App Manager”
