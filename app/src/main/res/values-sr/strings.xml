@@ -25,5 +25,4 @@
   <string name="sys_disable">Ово је системска компонента. Не радите измене осим ако знате шта радите.</string>
   <string name="changing_state">Мењам %1$s...</string>
   <string name="state_change_failed">Не могу да изменим стање %1$s (%2$s).\n\nВероватно ваш уређај нема потребни корени приступ.</string>
-  <string name="close_help">Затвори помоћ и назад на апликацију</string>
 </resources>

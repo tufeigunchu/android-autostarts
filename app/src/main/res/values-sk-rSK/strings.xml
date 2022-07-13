@@ -22,5 +22,4 @@
   <string name="warning">Upozornenie</string>
   <string name="info">Informácia</string>
   <string name="receiver_info">Príjmač &lt;b&gt;%1$s&lt;/b&gt; sa zaoberá akciou &lt;i&gt;%2$s&lt;/i&gt; s prioritou &lt;b&gt;%3$d&lt;/b&gt;.</string>
-  <string name="close_help">Zatvoriť pomocníka a vrátiť sa k aplikácii.</string>
 </resources>

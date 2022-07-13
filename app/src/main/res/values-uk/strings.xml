@@ -25,5 +25,4 @@
   <string name="sys_disable">Це системний компонент. Не робіть змін, якщо Ви знаєте, що ж Ви робите.</string>
   <string name="changing_state">Зміна %1$s...</string>
   <string name="state_change_failed">Неможливо змінити стан %1$s (%2$s).\n\nСкоріш за все Ваш пристрій не має root-доступу, який вимагається для цього.</string>
-  <string name="close_help">Закрити допомогу і повернутися до програми</string>
 </resources>

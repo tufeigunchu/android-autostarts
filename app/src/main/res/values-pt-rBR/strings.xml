@@ -25,5 +25,4 @@
   <string name="sys_disable">Este é um componente de sistema. Não faça alterações a não ser que saiba o que está fazendo.</string>
   <string name="changing_state">Alterando %1$s...</string>
   <string name="state_change_failed">Não é possível alterar o estado de %1$s (%2$s).\n\nProvavelmente seu dispositivo não possui o acesso root requerido.</string>
-  <string name="close_help">Fechar a ajuda e voltar para o aplicativo</string>
 </resources>

@@ -21,5 +21,4 @@
   <string name="warning">Avertissement</string>
   <string name="info">Info</string>
   <string name="changing_state">Chargement %1$s...</string>
-  <string name="close_help">Fermer l\'aide et revenir à l\'app</string>
 </resources>

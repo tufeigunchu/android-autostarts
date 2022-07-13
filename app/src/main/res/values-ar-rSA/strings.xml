@@ -22,5 +22,4 @@
   <string name="warning">تحذير</string>
   <string name="info">معلومات</string>
   <string name="receiver_info">استقبال &lt;b&gt;%1$s&lt;/b&gt;معالجة الحدث &lt;i&gt;%2$s&lt;/i&gt; بأولوية &lt;b&gt;%3$d&lt;/b&gt;.</string>
-  <string name="close_help">إغلاق المساعدة والرجوع إلى التطبيق</string>
 </resources>

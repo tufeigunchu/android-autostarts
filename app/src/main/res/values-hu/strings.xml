@@ -22,5 +22,4 @@
   <string name="warning">Figyelem</string>
   <string name="info">Információ</string>
   <string name="receiver_info">Vevő: &lt;b&gt;%1$s&lt;/b&gt; művelet: &lt;i&gt;%2$s&lt;/i&gt; prioritás: &lt;b&gt;%3$d&lt;/b&gt;.</string>
-  <string name="close_help">Segítség bezárása</string>
 </resources>

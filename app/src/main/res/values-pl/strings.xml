@@ -25,5 +25,4 @@
   <string name="sys_disable">To jest komponent systemowy. Nie wprowadzaj żadnych zmian jeśli nie wiesz co robisz.</string>
   <string name="changing_state">Zmienianie %1$s</string>
   <string name="state_change_failed">Nie można zmienić stanu %1$s (%2$s).\n\nPrawdopodobnie, twoje urządzenie nie ma praw roota, wymaganych do tej akcji.</string>
-  <string name="close_help">Zamknij pomoc i wróć do aplikacji</string>
 </resources>

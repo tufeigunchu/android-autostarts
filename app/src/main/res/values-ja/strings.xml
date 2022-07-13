@@ -25,5 +25,4 @@
   <string name="sys_disable">これはシステムコンポーネントです。 何を行っているのか分かっている以外は、変更しないでください。</string>
   <string name="changing_state">%1$s を変更中...</string>
   <string name="state_change_failed">%1$s (%2$s) の状態を変更できません。\n\nお使いのデバイスに root アクセス権がないようです。これは必須です。</string>
-  <string name="close_help">ヘルプを閉じて、アプリに戻る</string>
 </resources>

@@ -22,5 +22,4 @@
   <string name="warning">Προσοχή</string>
   <string name="info">Πληροφορίες</string>
   <string name="receiver_info">Το &lt;b&gt;%1$s&lt;/b&gt; χειρίζεται την ενέργεια &lt;i&gt;%2$s&lt;/i&gt; με προτεραιότητα &lt;b&gt;%3$d&lt;/b&gt;.</string>
-  <string name="close_help">Κλείσιμο της βοήθειας και επιστροφή στην εφαρμογή</string>
 </resources>
