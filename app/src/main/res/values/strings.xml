@@ -30,4 +30,7 @@
     <!-- The verb (changing) should be at the front of the string -->
     <string name="changing_state">Changing %1$s...</string>
     <string name="state_change_failed">Unable to change the state of %1$s (%2$s).\n\nMost likely, your device does not have root access, which is required.</string>
+    <string name="open_in_app_manager">Open in App Manager</string>
+    <string name="app_manager_not_installed">App Manager is not Installed</string>
+    <string name="app_manager_install_prompt">It looks like App Manager is not installed in your device. To down and install App Manager, visit %s.</string>
 </resources>
