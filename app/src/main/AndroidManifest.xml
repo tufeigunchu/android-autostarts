@@ -42,7 +42,6 @@
         <activity
             android:name=".HelpActivity"
             android:label="@string/help"
-            android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar"
             android:exported="false" />
 
         <service

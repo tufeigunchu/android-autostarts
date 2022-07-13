@@ -1,5 +1,6 @@
 package com.elsdoerfer.android.autostarts;
 
+import android.app.Activity;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.SpannableString;
@@ -10,13 +11,12 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.elsdoerfer.android.autostarts.opt.RootFeatures;
 
 import java.util.Objects;
 
-public class HelpActivity extends AppCompatActivity {
+public class HelpActivity extends Activity {
     private static final int[] DefaultFaq = {
             R.array.faq1,
             R.array.faq2,
@@ -37,7 +37,7 @@ public class HelpActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_help);
-        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+        Objects.requireNonNull(getActionBar()).setDisplayHomeAsUpEnabled(true);
 
         // Build the FAQ text.
         int[] faqConfig = RootFeatures.Enabled ? DefaultFaq : NoRootFaq;
