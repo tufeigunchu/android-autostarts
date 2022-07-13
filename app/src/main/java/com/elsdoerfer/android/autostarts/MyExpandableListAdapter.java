@@ -3,8 +3,11 @@ package com.elsdoerfer.android.autostarts;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
+import android.text.Spanned;
 import android.text.style.StrikethroughSpan;
+import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +15,7 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.elsdoerfer.android.autostarts.db.ComponentInfo;
 import com.elsdoerfer.android.autostarts.db.IntentFilterInfo;
@@ -23,6 +27,9 @@ import java.util.HashMap;
 
 import static com.elsdoerfer.android.autostarts.Utils.containsIgnoreCase;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 
 /**
  * ListAdapter used by the ListActivity. Has it's own top-level file to
@@ -33,7 +40,7 @@ public class MyExpandableListAdapter extends BaseExpandableListAdapter {
     static final public int GROUP_BY_ACTION = 1;
     static final public int GROUP_BY_PACKAGE = 2;
 
-    private ListActivity mActivity;
+    private final ListActivity mActivity;
     private ArrayList<IntentFilterInfo> mDataAll;
     private GroupingImpl mGroupDisplay;
     private int mCurrentGrouping = GROUP_BY_ACTION;
@@ -43,7 +50,7 @@ public class MyExpandableListAdapter extends BaseExpandableListAdapter {
     private boolean mShowChangedOnly = false;
     private String mTextFilter = "";
 
-    private LayoutInflater mInflater;
+    private final LayoutInflater mInflater;
 
     public MyExpandableListAdapter(ListActivity activity) {
         mActivity = activity;
@@ -116,44 +123,54 @@ public class MyExpandableListAdapter extends BaseExpandableListAdapter {
         }
     }
 
+    @Override
     public Object getChild(int groupPosition, int childPosition) {
         return mGroupDisplay.getChild(groupPosition, childPosition);
     }
 
+    @Override
     public long getChildId(int groupPosition, int childPosition) {
         return mGroupDisplay.getChildId(groupPosition, childPosition);
     }
 
+    @Override
     public int getChildrenCount(int groupPosition) {
         return mGroupDisplay.getChildrenCount(groupPosition);
     }
 
+    @Override
     public View getChildView(int groupPosition, int childPosition, boolean isLastChild,
                              View convertView, ViewGroup parent) {
         return mGroupDisplay.getChildView(groupPosition, childPosition, isLastChild, convertView, parent);
     }
 
+    @Override
     public Object getGroup(int groupPosition) {
         return mGroupDisplay.getGroup(groupPosition);
     }
 
+    @Override
     public int getGroupCount() {
         return mGroupDisplay.getGroupCount();
     }
 
+    @Override
     public long getGroupId(int groupPosition) {
         return mGroupDisplay.getGroupId(groupPosition);
     }
 
+    @Override
     public View getGroupView(int groupPosition, boolean isExpanded, View convertView,
                              ViewGroup parent) {
         return mGroupDisplay.getGroupView(groupPosition, isExpanded, convertView, parent);
     }
 
+    @Override
     public boolean isChildSelectable(int groupPosition, int childPosition) {
         return true;
     }
 
+    @Override
     public boolean hasStableIds() {
         return true;
     }
@@ -285,12 +302,11 @@ public class MyExpandableListAdapter extends BaseExpandableListAdapter {
          * using different layouts). Otherwise, a new view is created
          * based on "layout", as a child of "parent".
          */
-        protected View getView(View existing, String tag, int layout,
-                               ViewGroup parent) {
-            if (existing == null || existing.getTag() != "tag")
+        protected View getView(View existing, String tag, int layout, ViewGroup parent) {
+            if (existing == null || existing.getTag() != tag) {
                 return mParent.mInflater.inflate(layout, parent, false);
-            else
-                return existing;
+            }
+            return existing;
         }
 
         /**
@@ -302,7 +318,23 @@ public class MyExpandableListAdapter extends BaseExpandableListAdapter {
             if (!Actions.MAP.containsKey(action))
                 v.setVisibility(View.GONE);
             else {
-                v.setOnClickListener(_v -> mParent.mActivity.showInfoToast(action));
+                v.setOnClickListener(_v -> {
+                    Context context = _v.getContext();
+                    Object[] data = Actions.MAP.get(action);
+                    CharSequence readableActionName = data == null || data[1] == null ? action :
+                            context.getString((Integer) data[1]);
+                    SpannableString actionBold = new SpannableString(readableActionName);
+                    actionBold.setSpan(new StyleSpan(Typeface.BOLD), 0, actionBold.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    SpannableStringBuilder builder = new SpannableStringBuilder(actionBold);
+                    if (data != null) {
+                        CharSequence info = context.getText((Integer) data[2]);
+                        if (info.length() > 0) {
+                            builder.append("\n");
+                            builder.append(info);
+                        }
+                    }
+                    Toast.makeText(context, builder, Toast.LENGTH_LONG).show();
+                });
             }
         }
 
@@ -313,18 +345,16 @@ public class MyExpandableListAdapter extends BaseExpandableListAdapter {
          * <p>
          * Arguments can be null.
          */
-        protected void setTextStyle(TextView t, PackageInfo pkg,
-                                    ComponentInfo comp) {
-            if (pkg != null && pkg.isSystem)
+        protected void setTextStyle(@NonNull TextView t, @Nullable PackageInfo pkg, @Nullable ComponentInfo comp) {
+            if (pkg != null && pkg.isSystem) {
                 t.setTextColor(Color.YELLOW);
-            else
-                t.setTextColor(mParent.mActivity.getResources().getColor(
-                        android.R.color.primary_text_dark));
+            } else {
+                t.setTextColor(mParent.mActivity.getResources().getColor(android.R.color.primary_text_dark));
+            }
 
-            if (comp != null && comp.isCurrentlyEnabled() != comp.defaultEnabled)
+            if (comp != null && comp.isCurrentlyEnabled() != comp.defaultEnabled) {
                 t.setTypeface(Typeface.DEFAULT_BOLD);
-            else
-                t.setTypeface(Typeface.DEFAULT);
+            } else t.setTypeface(Typeface.DEFAULT);
         }
 
         /**
@@ -337,10 +367,12 @@ public class MyExpandableListAdapter extends BaseExpandableListAdapter {
                                         String base) {
             SpannableStringBuilder fullText = new SpannableStringBuilder();
             fullText.append(base);
-            if (comp.componentLabel != null && !comp.componentLabel.equals(""))
-                fullText.append(" (" + comp.componentLabel + ")");
-            if (!comp.isCurrentlyEnabled())
+            if (comp.componentLabel != null && !comp.componentLabel.equals("")) {
+                fullText.append(" (").append(comp.componentLabel).append(")");
+            }
+            if (!comp.isCurrentlyEnabled()) {
                 fullText.setSpan(new StrikethroughSpan(), 0, fullText.length(), 0);
+            }
             t.setText(fullText);
         }
     }
@@ -353,8 +385,7 @@ public class MyExpandableListAdapter extends BaseExpandableListAdapter {
         ArrayList<String> mGroups;
         MapOfIntents<String> mChildren;
 
-        GroupByActionImpl(ArrayList<IntentFilterInfo> data,
-                          MyExpandableListAdapter adapter) {
+        GroupByActionImpl(ArrayList<IntentFilterInfo> data, MyExpandableListAdapter adapter) {
             super(adapter);
 
             mGroups = new ArrayList<>();
@@ -378,25 +409,21 @@ public class MyExpandableListAdapter extends BaseExpandableListAdapter {
 
         public View getGroupView(int groupPosition, boolean isExpanded,
                                  View convertView, ViewGroup parent) {
-            String action = (String) getGroup(groupPosition);
+            String action = getGroup(groupPosition);
 
-            View v = getView(convertView, "act-group",
-                    R.layout.by_act_group_row, parent);
+            View v = getView(convertView, "act-group", R.layout.by_act_group_row, parent);
             setActionInfo(v, action);
 
-            ((TextView) v.findViewById(R.id.title)).setText(
-                    mParent.mActivity.getIntentName(action));
+            ((TextView) v.findViewById(R.id.title)).setText(mParent.mActivity.getIntentName(action));
 
             return v;
         }
 
         public View getChildView(int groupPosition, int childPosition,
                                  boolean isLastChild, View convertView, ViewGroup parent) {
-            View v = getView(convertView, "act-child",
-                    R.layout.by_act_child_row, parent);
+            View v = getView(convertView, "act-child", R.layout.by_act_child_row, parent);
 
-            IntentFilterInfo info = (IntentFilterInfo) getChild(
-                    groupPosition, childPosition);
+            IntentFilterInfo info = getChild(groupPosition, childPosition);
             ComponentInfo comp = info.componentInfo;
 
             // Set the icon
@@ -422,7 +449,7 @@ public class MyExpandableListAdapter extends BaseExpandableListAdapter {
         }
 
         @Override
-        public Object getGroup(int groupPosition) {
+        public String getGroup(int groupPosition) {
             return mGroups.get(groupPosition);
         }
 
@@ -442,7 +469,7 @@ public class MyExpandableListAdapter extends BaseExpandableListAdapter {
         }
 
         @Override
-        public Object getChild(int groupPosition, int childPosition) {
+        public IntentFilterInfo getChild(int groupPosition, int childPosition) {
             return mChildren.get(mGroups.get(groupPosition)).get(childPosition);
         }
     }
@@ -477,36 +504,41 @@ public class MyExpandableListAdapter extends BaseExpandableListAdapter {
             }
         }
 
+        @Override
         public int getGroupCount() {
             return mGroups.size();
         }
 
+        @Override
         public long getGroupId(int groupPosition) {
             return mGroups.get(groupPosition).hashCode();
         }
 
-        public Object getGroup(int groupPosition) {
+        @Override
+        public PackageInfo getGroup(int groupPosition) {
             return mGroups.get(groupPosition);
         }
 
+        @Override
         public int getChildrenCount(int groupPosition) {
             return mChildren.get(mGroups.get(groupPosition)).size();
         }
 
+        @Override
         public long getChildId(int groupPosition, int childPosition) {
             return getChild(groupPosition, childPosition).hashCode();
         }
 
-        public Object getChild(int groupPosition, int childPosition) {
+        @Override
+        public IntentFilterInfo getChild(int groupPosition, int childPosition) {
             return mChildren.get(mGroups.get(groupPosition)).get(childPosition);
         }
 
         @Override
         public View getGroupView(int groupPosition, boolean isExpanded,
                                  View convertView, ViewGroup parent) {
-            PackageInfo pkg = (PackageInfo) getGroup(groupPosition);
-            View v = getView(convertView, "pkg-group",
-                    R.layout.by_pkg_group_row, parent);
+            PackageInfo pkg = getGroup(groupPosition);
+            View v = getView(convertView, "pkg-group", R.layout.by_pkg_group_row, parent);
 
             // Set the icon
             ImageView img = v.findViewById(R.id.icon);
@@ -523,11 +555,9 @@ public class MyExpandableListAdapter extends BaseExpandableListAdapter {
         @Override
         public View getChildView(int groupPosition, int childPosition,
                                  boolean isLastChild, View convertView, ViewGroup parent) {
-            IntentFilterInfo info = (IntentFilterInfo) getChild(
-                    groupPosition, childPosition);
+            IntentFilterInfo info = getChild(groupPosition, childPosition);
 
-            View v = getView(convertView, "pkg-child",
-                    R.layout.by_pkg_child_row, parent);
+            View v = getView(convertView, "pkg-child", R.layout.by_pkg_child_row, parent);
             setActionInfo(v, info.action);
 
             TextView text = v.findViewById(R.id.title);

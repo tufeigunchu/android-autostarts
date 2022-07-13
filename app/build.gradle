@@ -7,8 +7,8 @@ android {
         applicationId 'io.github.muntashirakon.autostarts'
         minSdkVersion 21
         targetSdkVersion 32
-        versionCode 35
-        versionName "2.1.0"
+        versionCode 36
+        versionName "2.2.0"
     }
     buildTypes {
         release {
@@ -25,5 +25,6 @@ android {
 dependencies {
     implementation 'androidx.annotation:annotation:1.4.0'
     def libsuVersion = '5.0.1'
+    implementation 'org.lsposed.hiddenapibypass:hiddenapibypass:4.3'
     implementation "com.github.topjohnwu.libsu:core:${libsuVersion}"
 }

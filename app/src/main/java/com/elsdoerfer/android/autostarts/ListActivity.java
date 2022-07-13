@@ -482,26 +482,6 @@ public class ListActivity extends ExpandableListActivity {
         startService(intent);
     }
 
-    // TODO: Instead of showing a toast, fade in a custom info bar, then
-    // fade out. This would be an improvement because we could control
-    // it better: Show it longer, but have it disappear when the user
-    // clicks on it (toasts don't receive clicks).
-    // Consider: https://github.com/johnkil/Android-AppMsg
-    public void showInfoToast(String action) {
-        Object[] data = Actions.MAP.get(action);
-        SpannableString actionBold = new SpannableString(getIntentName(action));
-        actionBold.setSpan(new StyleSpan(Typeface.BOLD), 0, actionBold.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        SpannableStringBuilder builder = new SpannableStringBuilder(actionBold);
-        if (data != null) {
-            CharSequence info = getText((Integer) data[2]);
-            if (info.length() > 0) {
-                builder.append("\n");
-                builder.append(info);
-            }
-        }
-        Toast.makeText(this, builder, Toast.LENGTH_LONG).show();
-    }
-
     /**
      * Return a name for the given intent; tries the pretty name,
      * if available, and falls back to the raw class name.
@@ -510,9 +490,7 @@ public class ListActivity extends ExpandableListActivity {
         Object[] data = Actions.MAP.get(action);
         if (data == null)
             return action;
-        return (data[1] != null) ?
-                getResources().getString((Integer) data[1]) :
-                (String) data[0];
+        return data[1] != null ? getResources().getString((Integer) data[1]) : (String) data[0];
     }
 
     /**
