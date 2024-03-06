@@ -26,5 +26,4 @@ dependencies {
     implementation 'androidx.annotation:annotation:1.4.0'
     def libsuVersion = '5.0.1'
     implementation 'org.lsposed.hiddenapibypass:hiddenapibypass:4.3'
-    implementation "com.github.topjohnwu.libsu:core:${libsuVersion}"
 }
